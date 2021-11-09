@@ -66,6 +66,7 @@ static lin equivs_alloc;
 
 /* Read a block of data into a file buffer, checking for EOF and error.  */
 
+/*为current文件加载size个字节到buffer*/
 void
 file_block_read (struct file_data *current, size_t size)
 {
@@ -74,6 +75,7 @@ file_block_read (struct file_data *current, size_t size)
       size_t s = block_read (current->desc,
 			     FILE_BUFFER (current) + current->buffered, size);
       if (s == SIZE_MAX)
+    	  /*读取失败，退出*/
 	pfatal_with_name (current->name);
       current->buffered += s;
       current->eof = s < size;

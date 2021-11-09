@@ -496,12 +496,15 @@ diff_2_files (struct comparison *cmp)
 				    STAT_BLOCKSIZE (cmp->file[1].stat),
 				    lcm_max),
 			lcm_max);
+
+	  /*为各file初始化buffer*/
 	  for (f = 0; f < 2; f++)
 	    cmp->file[f].buffer = xrealloc (cmp->file[f].buffer, buffer_size);
 
 	  for (;; cmp->file[0].buffered = cmp->file[1].buffered = 0)
 	    {
 	      /* Read a buffer's worth from both files.  */
+		  /*为各file的buffer加载满buffer*/
 	      for (f = 0; f < 2; f++)
 		if (0 <= cmp->file[f].desc)
 		  file_block_read (&cmp->file[f],
@@ -513,6 +516,7 @@ diff_2_files (struct comparison *cmp)
 			     cmp->file[1].buffer,
 			     cmp->file[0].buffered))
 		{
+	    	  /*两文件buffer不同*/
 		  changes = 1;
 		  break;
 		}

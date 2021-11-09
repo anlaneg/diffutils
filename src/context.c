@@ -330,6 +330,7 @@ pr_unidiff_hunk (struct change *hunk)
   begin_output ();
   out = outfile;
 
+  /*输出hunk起始行*/
   fputs ("@@ -", out);
   print_unidiff_number_range (&files[0], first0, last0);
   fputs (" +", out);

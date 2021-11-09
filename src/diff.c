@@ -480,6 +480,7 @@ main (int argc, char **argv)
 	  break;
 
 	case 'u':
+	  /*变更样式为output_unified*/
 	  specify_style (OUTPUT_UNIFIED);
 	  if (context < 3)
 	    context = 3;
@@ -645,6 +646,7 @@ main (int argc, char **argv)
 	specify_style (OUTPUT_NORMAL);
     }
 
+  /*设置time格式化样式*/
   if (output_style != OUTPUT_CONTEXT || hard_locale (LC_TIME))
     {
 #if (defined STAT_TIMESPEC || defined STAT_TIMESPEC_NS \
@@ -765,6 +767,7 @@ main (int argc, char **argv)
 		try_help ("extra operand '%s'", argv[optind + 2]);
 	    }
 
+	  /*未指定from_file,to_file,按参数指定的前两个文件进行比对*/
 	  exit_status = compare_files (NULL, argv[optind], argv[optind + 1]);
 	}
     }
@@ -1003,6 +1006,7 @@ specify_style (enum output_style style)
 {
   if (output_style != style)
     {
+	  /*输出样式变更*/
       if (output_style != OUTPUT_UNSPECIFIED)
 	try_help ("conflicting output style options", NULL);
       output_style = style;
@@ -1038,10 +1042,11 @@ set_mtime_to_now (struct stat *st)
 
 static int
 compare_files (struct comparison const *parent,
-	       char const *name0,
-	       char const *name1)
+	       char const *name0/*待比对的文件a*/,
+	       char const *name1/*待比对的文件b*/)
 {
   struct comparison cmp;
+  /*检查文件f是否为目录*/
 #define DIR_P(f) (S_ISDIR (cmp.file[f].stat.st_mode) != 0)
   register int f;
   int status = EXIT_SUCCESS;
@@ -1110,12 +1115,13 @@ compare_files (struct comparison const *parent,
       if (cmp.file[f].desc != NONEXISTENT)
 	{
 	  if (f && file_name_cmp (cmp.file[f].name, cmp.file[0].name) == 0)
-	    {
+	    {/*0,1两个文件完全相等*/
 	      cmp.file[f].desc = cmp.file[0].desc;
 	      cmp.file[f].stat = cmp.file[0].stat;
 	    }
 	  else if (STREQ (cmp.file[f].name, "-"))
 	    {
+		  /*标准输入*/
 	      cmp.file[f].desc = STDIN_FILENO;
 	      if (binary && ! isatty (STDIN_FILENO))
 		set_binary_mode (STDIN_FILENO, O_BINARY);
@@ -1243,6 +1249,7 @@ compare_files (struct comparison const *parent,
 		   cmp.file[0].name, cmp.file[1].name);
 	}
       else
+    	  /*目录比对*/
 	status = diff_dirs (&cmp, compare_files);
     }
   else if ((DIR_P (0) | DIR_P (1))
@@ -1359,12 +1366,15 @@ compare_files (struct comparison const *parent,
 
       int oflags = O_RDONLY | (binary ? O_BINARY : 0);
 
+      /*打开文件0*/
       if (cmp.file[0].desc == UNOPENED)
 	if ((cmp.file[0].desc = open (cmp.file[0].name, oflags, 0)) < 0)
 	  {
 	    perror_with_name (cmp.file[0].name);
 	    status = EXIT_TROUBLE;
 	  }
+
+      /*打开文件1*/
       if (cmp.file[1].desc == UNOPENED)
 	{
 	  if (same_files)
@@ -1379,6 +1389,7 @@ compare_files (struct comparison const *parent,
       /* Compare the files, if no error was found.  */
 
       if (status == EXIT_SUCCESS)
+    	  /*比对打开的两个文件*/
 	status = diff_2_files (&cmp);
 
       /* Close the file descriptors.  */

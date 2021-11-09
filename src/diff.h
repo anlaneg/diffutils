@@ -81,7 +81,7 @@ enum output_style
    i.e. can handle a file that ends in a non-newline.  */
 #define ROBUST_OUTPUT_STYLE(S) ((S) != OUTPUT_ED && (S) != OUTPUT_FORWARD_ED)
 
-XTERN enum output_style output_style;
+XTERN enum output_style output_style;/*输出样式*/
 
 /* Nonzero if output cannot be generated for identical files.  */
 XTERN bool no_diff_means_no_output;
@@ -241,19 +241,21 @@ struct change
 /* Data on one input file being compared.  */
 
 struct file_data {
+	/*文件描述符*/
     int             desc;	/* File descriptor  */
+    /*文件名称*/
     char const      *name;	/* File name  */
     struct stat     stat;	/* File status */
 
     /* Buffer in which text of file is read.  */
-    word *buffer;
+    word *buffer;/*缓冲文件内容*/
 
     /* Allocated size of buffer, in bytes.  Always a multiple of
        sizeof *buffer.  */
     size_t bufsize;
 
     /* Number of valid bytes now in the buffer.  */
-    size_t buffered;
+    size_t buffered;/*在buffer中内容长度*/
 
     /* Array of pointers to lines in the file.  */
     char const **linbuf;
@@ -299,7 +301,7 @@ struct file_data {
     bool missing_newline;
 
     /* 1 if at end of file.  */
-    bool eof;
+    bool eof;/*是否到达文件结尾*/
 
     /* 1 more than the maximum equivalence value used for this or its
        sibling file.  */
@@ -314,6 +316,7 @@ struct file_data {
 
 struct comparison
   {
+	/*各文件情况*/
     struct file_data file[2];
     struct comparison const *parent;  /* parent, if a recursive comparison */
   };
@@ -324,7 +327,7 @@ XTERN struct file_data files[2];
 
 /* Stdio stream to output diffs to.  */
 
-XTERN FILE *outfile;
+XTERN FILE *outfile;/*diff输出文件*/
 
 /* Declare various functions.  */
 

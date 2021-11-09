@@ -45,23 +45,28 @@ size_t
 block_read (int fd, char *buf, size_t nbytes)
 {
   char *bp = buf;
+  /*buffer的结束位置*/
   char const *buflim = buf + nbytes;
   size_t readlim = MIN (SSIZE_MAX, SIZE_MAX);
 
   do
     {
+	  /*剩余的待填充的buffer空间*/
       size_t bytes_remaining = buflim - bp;
       size_t bytes_to_read = MIN (bytes_remaining, readlim);
+      /*读取fd*/
       ssize_t nread = read (fd, bp, bytes_to_read);
       if (nread <= 0)
 	{
 	  if (nread == 0)
+		/*读取文件结束*/
 	    break;
 
 	  /* Accommodate Tru64 5.1, which can't read more than INT_MAX
 	     bytes at a time.  They call that a 64-bit OS?  */
 	  if (errno == EINVAL && INT_MAX < bytes_to_read)
 	    {
+		  /*buffer过大*/
 	      readlim = INT_MAX;
 	      continue;
 	    }
@@ -74,13 +79,15 @@ block_read (int fd, char *buf, size_t nbytes)
 	  if (! SA_RESTART && errno == EINTR)
 	    continue;
 
+	  /*读取失败*/
 	  return SIZE_MAX;
 	}
+      /*读取成功，bp向前推进nread*/
       bp += nread;
     }
-  while (bp < buflim);
+  while (bp < buflim);/*如果没有读取够，则继续循环*/
 
-  return bp - buf;
+  return bp - buf;/*返回读取到的实际长度*/
 }
 
 /* Least common multiple of two buffer sizes A and B.  However, if
