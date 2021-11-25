@@ -245,6 +245,7 @@ struct file_data {
     int             desc;	/* File descriptor  */
     /*文件名称*/
     char const      *name;	/* File name  */
+    /*通过stat函数合到的$name文件的统计情况*/
     struct stat     stat;	/* File status */
 
     /* Buffer in which text of file is read.  */
@@ -252,10 +253,10 @@ struct file_data {
 
     /* Allocated size of buffer, in bytes.  Always a multiple of
        sizeof *buffer.  */
-    size_t bufsize;
+    size_t bufsize;/*缓冲区长度*/
 
     /* Number of valid bytes now in the buffer.  */
-    size_t buffered;/*在buffer中内容长度*/
+    size_t buffered;/*在buffer中的内容长度*/
 
     /* Array of pointers to lines in the file.  */
     char const **linbuf;
@@ -298,7 +299,7 @@ struct file_data {
     char *changed;
 
     /* 1 if file ends in a line with no final newline.  */
-    bool missing_newline;
+    bool missing_newline;/*标明buffer中最后是否为真实的换行*/
 
     /* 1 if at end of file.  */
     bool eof;/*是否到达文件结尾*/

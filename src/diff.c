@@ -1160,7 +1160,7 @@ compare_files (struct comparison const *parent,
   for (f = 0; f < 2; f++)
     if ((new_file || (f == 0 && unidirectional_new_file))
 	&& (cmp.file[f].desc == UNOPENED
-	    ? (S_ISREG (cmp.file[f].stat.st_mode)
+	    ? (S_ISREG (cmp.file[f].stat.st_mode)/*普通文件*/
 	       && ! (cmp.file[f].stat.st_mode & (S_IRWXU | S_IRWXG | S_IRWXO))
 	       && cmp.file[f].stat.st_size == 0)
 	    : ((cmp.file[f].desc == ERRNO_ENCODE (ENOENT)

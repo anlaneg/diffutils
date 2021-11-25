@@ -101,11 +101,14 @@ buffer_lcm (size_t a, size_t b, size_t lcm_max)
 
   /* Yield reasonable values if buffer sizes are zero.  */
   if (!a)
+      /*a为零时，优先b,否则常量*/
     return b ? b : 8 * 1024;
   if (!b)
+      /*b为零，优先a*/
     return a;
 
   /* n = gcd (a, b) */
+  /*a,b不为零，取公约数n*/
   for (m = a, n = b;  (r = m % n) != 0;  m = n, n = r)
     continue;
 

@@ -105,6 +105,7 @@ sip (struct file_data *current, bool skip_test)
     }
   else
     {
+      /*获得buffersize，并申请等长buffer*/
       current->bufsize = buffer_lcm (sizeof (word),
 				     STAT_BLOCKSIZE (current->stat),
 				     PTRDIFF_MAX - 2 * sizeof (word));
@@ -123,6 +124,7 @@ sip (struct file_data *current, bool skip_test)
 
 	  int prev_mode = set_binary_mode (current->desc, O_BINARY);
 	  off_t buffered;
+	  /*尝试读满buffer*/
 	  file_block_read (current, current->bufsize);
 	  buffered = current->buffered;
 
@@ -583,6 +585,7 @@ find_identical_ends (struct file_data filevec[])
       /* Insert end sentinels, in this case characters that are guaranteed
 	 to make the equality test false, and thus terminate the loop.  */
 
+      /*n0,n1不等时，总是在最短的位置设置不等标记*/
       if (n0 < n1)
 	p0[n0] = ~p1[n0];
       else
@@ -592,13 +595,13 @@ find_identical_ends (struct file_data filevec[])
 
       /* Compare a word at a time for speed.  */
       while (*w0 == *w1)
-	w0++, w1++;
+	w0++, w1++;/*执行两个buffer比对，按word比对*/
 
       /* Do the last few bytes of comparison a byte at a time.  */
       p0 = (char *) w0;
       p1 = (char *) w1;
       while (*p0 == *p1)
-	p0++, p1++;
+	p0++, p1++;/*执行两个buffer比对，按byte比对*/
 
       /* Don't mistakenly count missing newline as part of prefix.  */
       if (ROBUST_OUTPUT_STYLE (output_style)
@@ -614,9 +617,9 @@ find_identical_ends (struct file_data filevec[])
      and then discard up to HORIZON_LINES lines from the prefix.  */
   i = horizon_lines;
   while (p0 != buffer0 && (p0[-1] != '\n' || i--))
-    p0--, p1--;
+    p0--, p1--;/*向回退，退到行开始位置，并丢掉相等行中horizon_lines行（这个用来做锚点）*/
 
-  /* Record the prefix.  */
+  /* Record the prefix.  *//*前缀起始位置*/
   filevec[0].prefix_end = p0;
   filevec[1].prefix_end = p1;
 
@@ -653,6 +656,7 @@ find_identical_ends (struct file_data filevec[])
       i = horizon_lines + !((buffer0 == p0 || p0[-1] == '\n')
 			    &&
 			    (buffer1 == p1 || p1[-1] == '\n'));
+      /*查找到换行*/
       while (i-- && p0 != end0)
 	while (*p0++ != '\n')
 	  continue;
